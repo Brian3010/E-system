@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream> //library to work with file
 #include <string>
+#include <vector>
 using namespace std;
 
 
@@ -18,7 +19,10 @@ using namespace std;
 
 bool fexist(string file);
 
+//void storeDataintoVector()
 void numberOfVote(string name, string file);
+
+
 
 int main() {
 
@@ -56,8 +60,8 @@ int main() {
 			switch (option) {
 			case 'P':
 				//Display number of votes
-				cout << "Enter candidate's name: " << endl;
-				cin >> candidateName;
+				//cout << "Enter candidate's name: " << endl;
+				//cin >> candidateName;
 				numberOfVote(candidateName, candidateFile);
 
 
@@ -106,17 +110,36 @@ bool fexist(string file) {
 }
 // another fucntion to get the count in candidate database 
 
-
+//https://github.com/Vinayak-D/FileIO/blob/master/vinayak.h
+//https://github.com/Vinayak-D/FileIO/blob/master/coefficients.txt
 void numberOfVote(string name, string file) {
 	string line;
+	//string symbol, canName, age, suburb, count;
+	vector<string> data;
 	ifstream inFile(file);
-	string a;
+	int i = 0;
+
 	if (inFile.is_open()) {
-		while (getline(inFile, line)) {
-			cout << line << "\n";
+		/*while (getline(inFile, line)) {
+			data.push_back(line);
+
+		}
+		for (int i = 0 ; i < data.size(); i++){
+			cout << i << ": "<<data[i] << "\n";
 		}
 
-		cout << line[0] << line[1] << line[2] << line[3] << " asd";
+		
+		cout << "\n\n\n" << data[4] << endl;*/
+		//cout << data[1].erase(',');
+		
+		while (!inFile.eof()) {
+			getline(inFile, line, ',');
+			cout << i << ": " << line << endl;
+			i++;
+		}
+		
+		
+		
 
 	}
 	else {
