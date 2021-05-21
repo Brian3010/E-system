@@ -110,43 +110,45 @@ bool fexist(string file) {
 }
 // another fucntion to get the count in candidate database 
 
-//https://github.com/Vinayak-D/FileIO/blob/master/vinayak.h
-//https://github.com/Vinayak-D/FileIO/blob/master/coefficients.txt
+
 void numberOfVote(string name, string file) {
-	//string line;
-	//string symbol, canName, age, suburb, count;
-	//vector<string> data;
+
 
 	string symbol, canName, age, suburb, count;
 	vector <string> sym_bol;
-	vector <string> canName;
-	vector <int> age;
+	vector <string> can_Name;
+	vector <int> can_Age;
 	vector <string> sub_burb;
-	vector <int> count;
+	vector <int> can_Count;
 
 	
-	ifstream inFile(file);
 	string line;
-	cout << line;
+	getline (inFile,line);  //ignore the first line (heading)
+	//cout << line;
+	
 	if (inFile.is_open()) {
-		/*while (getline(inFile, line)) {
-			data.push_back(line);
-
-		}
-		for (int i = 0 ; i < data.size(); i++){
-			cout << i << ": "<<data[i] << "\n";
-		}
-
 		
-		cout << "\n\n\n" << data[4] << endl;*/
-		//cout << data[1].erase(',');
-		
-		/*while (!inFile.eof()) {
+		while (!inFile.eof()) {
 			getline(inFile,symbol , ',');
+			sym_bol.push_back(symbol);
+
+			getline(inFile,canName, ',');
+			can_Name.push_back(canName);
+
+			getline(inFile,age, ',');
+			can_Age.push_back(stoi(age));
+
+			getline(inFile,suburb, ',');
+			sub_burb.push_back(suburb);
+
+			getline(inFile,count, '\n');
+			can_Count.push_back(stoi(count));
 			
-		}*/
+		}
 		
-		
+		for (int i = 0; i < can_Age.size(); i++){
+			cout <<can_Age[i] << endl;
+		}
 		
 
 	}
