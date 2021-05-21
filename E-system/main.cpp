@@ -113,12 +113,21 @@ bool fexist(string file) {
 //https://github.com/Vinayak-D/FileIO/blob/master/vinayak.h
 //https://github.com/Vinayak-D/FileIO/blob/master/coefficients.txt
 void numberOfVote(string name, string file) {
-	string line;
+	//string line;
 	//string symbol, canName, age, suburb, count;
-	vector<string> data;
-	ifstream inFile(file);
-	int i = 0;
+	//vector<string> data;
 
+	string symbol, canName, age, suburb, count;
+	vector <string> sym_bol;
+	vector <string> canName;
+	vector <int> age;
+	vector <string> sub_burb;
+	vector <int> count;
+
+	
+	ifstream inFile(file);
+	string line;
+	cout << line;
 	if (inFile.is_open()) {
 		/*while (getline(inFile, line)) {
 			data.push_back(line);
@@ -132,11 +141,10 @@ void numberOfVote(string name, string file) {
 		cout << "\n\n\n" << data[4] << endl;*/
 		//cout << data[1].erase(',');
 		
-		while (!inFile.eof()) {
-			getline(inFile, line, ',');
-			cout << i << ": " << line << endl;
-			i++;
-		}
+		/*while (!inFile.eof()) {
+			getline(inFile,symbol , ',');
+			
+		}*/
 		
 		
 		
