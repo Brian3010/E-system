@@ -20,9 +20,9 @@ using namespace std;
 bool fexist(string file);
 
 //void storeDataintoVector()
-void numberOfVote(string name, string file);
+//void numberOfVote(string name, string file);
 
-
+void importCandidateToArray(string file, vector<string> vect1, vector<string> vect2, vector<int> vect3, vector<string> vect4, vector<int> vect5);
 
 int main() {
 
@@ -31,6 +31,12 @@ int main() {
 
 	const string voterFile = "voters.txt";
 	const string candidateFile = "candidates.txt";
+
+	vector <string> sym_bol;
+	vector <string> can_Name;
+	vector <int> can_Age;
+	vector <string> sub_burb;
+	vector <int> can_Count;
 
 	if (!fexist(voterFile) || !fexist(candidateFile)) {
 		cout << "Error!! openning the database" << endl;
@@ -53,6 +59,8 @@ int main() {
 			cin >> input;
 			option = toupper(input);
 
+			/*convert text file to vector for easier data modification*/
+			importCandidateToArray(candidateFile,sym_bol, can_Name, can_Age, sub_burb, can_Count);
 
 			/*the switch-case then is used to idenfify choices from the user. depending on user's choice,
 			each case calls coresponding function to execute.
@@ -62,7 +70,7 @@ int main() {
 				//Display number of votes
 				//cout << "Enter candidate's name: " << endl;
 				//cin >> candidateName;
-				numberOfVote(candidateName, candidateFile);
+				//numberOfVote(candidateName, candidateFile);
 
 
 				break;
@@ -108,12 +116,53 @@ bool fexist(string file) {
 	isFile.open(file);
 	return !isFile.fail();
 }
-// another fucntion to get the count in candidate database 
 
+void importCandidateToArray(string file,vector<string> vect1, vector<string> vect2, vector<int> vect3, vector<string> vect4, vector<int> vect5) {
+	string symbol, canName, age, suburb, count;
 
-void numberOfVote(string name, string file) {
+	ifstream inFile(file);
+	string line;
+	getline(inFile, line);  //ignore the first line (heading)
+	//cout << line;
 
+	if (inFile.is_open()) {
 
+		while (!inFile.eof()) {  
+
+			/*dataset in candidate file: Eureka,Stephen Cummings,51,Kensington,50 
+			*							Nationals,Burke Lambert,61,Parkville,59
+			* 
+			*/
+			getline(inFile, symbol, ','); //get first data e.g. Eureka
+			vect1.push_back(symbol);	//push into vector 
+
+			getline(inFile, canName, ','); // move to next data e.g. Stephen Cummings
+			vect2.push_back(canName);	//push into vector
+
+			getline(inFile, age, ','); //move to next e.g. 51
+			vect3.push_back(stoi(age));//push into vector
+
+			getline(inFile, suburb, ','); //move to next e.g.Kensington
+			vect4.push_back(suburb);//push into vector
+
+			getline(inFile, count, '\n');  //move to next e.g. 50
+			vect5.push_back(stoi(count));//push into vector
+
+		}
+
+		/*for (int i = 0; i < vect1.size(); i++) {
+			cout << vect1[i] << endl;
+		}*/
+
+	}
+	else {
+		cout << "unable to open the database" << endl;
+	}
+
+}
+
+/*void numberOfVote(string name, string file) {
+	
 	string symbol, canName, age, suburb, count;
 	vector <string> sym_bol;
 	vector <string> can_Name;
@@ -122,6 +171,7 @@ void numberOfVote(string name, string file) {
 	vector <int> can_Count;
 
 	
+	ifstream inFile(file);
 	string line;
 	getline (inFile,line);  //ignore the first line (heading)
 	//cout << line;
@@ -157,4 +207,4 @@ void numberOfVote(string name, string file) {
 	}
 
 
-}
+}*/
