@@ -17,6 +17,8 @@ using namespace std;
 
 /*function declaration*/
 
+int main();
+
 bool fexist(string file);
 
 void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2);
@@ -24,10 +26,17 @@ void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2);
 void importCandidateToArray(string file, vector<string>& vect1, vector<string>& vect2, vector<int>& vect3, vector<string>& vect4, vector<int>& vect5);
 void importVoterToArray(string file, vector<int> &vect1, vector<string> &vect2, vector<int> &vect3, vector<string> &vect4, vector<string> &vect5);
 
+bool isName(vector<string>& vect1, string name);
+bool isID(vector<int>& vect1, int id);
+bool isNumber(string id);
+
+void addVoteToCandidate(string file, int voteNum, string name,vector<string>& canName, vector<int> & canCount);
 int main() {
 
 	char option, input; // variable to work with user's input
 	string candidateName;
+	string id;
+
 
 	const string voterFile = "voters.txt";
 	const string candidateFile = "candidates.txt";
@@ -72,19 +81,61 @@ int main() {
 			Invalid choice is prompted to try again*/
 			switch (option) {
 			case 'P':
-				
 				//Display number of votes
 				cout << "Enter candidate's name (Please start the name with capital letter): " << endl;
 				getline(cin.ignore(), candidateName);
-				
 				numberOfVote(candidateName,can_Name,can_Count);
-				
-
 				break;
 			case 'A':
 				//Add vote (integer) to the candidate 
+				cout << "Enter your ID: ";
+				cin >> id;
 
+				/* the isNumber checks if the input is in number format or not, once it satisfies
+				* the required format, it checks if id is registered or not (isID (vector, id)),
+				* and process the data.
+				*/
+				if (!isNumber(id)) {
+					cout << "Please enter your id in number format" << endl;
+				}
+				else if (isNumber(id) && isID(voterID, stoi(id)) ) {
+					cout << "registered" << endl;
+					/*cout << "Enter candidate's name (Please start the name with capital letter): ";
+					getline(cin.ignore(), candidateName);*/
 
+					/*if (isName(can_Name, candidateName)) {
+						cout << "true";
+
+					}
+					else {
+						cout << "false";
+					}*/
+					bool flag = false;
+					do {
+						int voteNum;
+						cout << "\nEnter candidate's name (Please start the name with capital letter): ";
+						getline(cin.ignore(), candidateName);
+						
+						if (isName(can_Name, candidateName)) {
+							cout << "true";
+							cout << "enter number of votes: ";
+							cin >> voteNum;
+							addVoteToCandidate(candidateFile, voteNum,candidateName, can_Name, can_Count);
+							flag = true;
+						}
+						else {
+							cout << "false";
+							flag = false;
+							
+						}
+
+					} while (flag != false);
+				}
+				else {
+					cout << "not registered" << endl;
+				}
+				
+				
 
 				break;
 			case 'S':
@@ -114,8 +165,6 @@ int main() {
 
 
 /*function definition*/
-
-
 
 //check if the database exists
 bool fexist(string file) {
@@ -160,12 +209,12 @@ void importCandidateToArray(string file,vector<string> &vect1, vector<string> &v
 		/*for (int i = 0; i < vect1.size(); i++) {
 			cout << vect1[i] << endl;
 		}*/
-
+		inFile.close();
 	}
 	else {
 		cout << "unable to open the database" << endl;
 	}
-	inFile.close();
+	
 }
 
 void importVoterToArray(string file, vector<int>& vect1, vector<string>& vect2, vector<int>& vect3, vector<string>& vect4, vector<string>& vect5)
@@ -198,13 +247,13 @@ void importVoterToArray(string file, vector<int>& vect1, vector<string>& vect2, 
 		/*for (int i = 0; i < vect1.size(); i++) {
 			cout << vect1[i] << endl;
 		}*/
-
+		inFile.close();
 	}
 	else {
 		cout << "unable to open the Voter database" << endl;
 	}
 
-	inFile.close();
+	
 }
 
 void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2) {
@@ -229,3 +278,97 @@ void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2) {
 		cout << name << " is not listed in the database" << endl;
 	}
 }
+
+bool isName(vector<string>& vect1, string name) {
+	for (int i = 0; i < vect1.size(); i++) {
+		if (vect1[i].compare(name) == 0) {
+			return true;
+		}
+	
+	}
+	return false;
+	
+}
+
+bool isID(vector<int>& vect1, int id)
+{
+	for (int i = 0; i < vect1.size(); i++) {
+		if (vect1[i] == id) {
+			return true;
+		}	
+	}
+	return false;
+}
+
+bool isNumber(string id)
+{
+	for (int i = 0; i < id.length(); i++) {
+		if (isdigit(id[i])) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void addVoteToCandidate(string file, int voteNum, string name, vector<string>& canName, vector<int>& canCount)
+{
+	string line, symbol, nameofCan, age, suburb, count;
+
+	int newCount = 0;
+	int pos =0;
+	//bool flag = false;
+	for (int i = 0; i < canName.size(); i++) {
+		if (canName[i].compare(name) == 0) {
+			canCount[i] += voteNum;
+			newCount = canCount[i];
+			pos = i;
+			//flag = true;
+		}
+
+	}
+
+	cout << newCount;
+	fstream inFile;
+	//https://stackoverflow.com/questions/34507989/update-and-delete-data-from-file-in-c
+	inFile.open(file, ios::in );
+	int j = 0;
+	if (inFile.is_open()){
+		while (!inFile.eof()) {
+			getline(inFile, symbol, ',');
+			getline(inFile, nameofCan, ',');
+			getline(inFile, age, ',');
+			getline(inFile, suburb, ',');
+			getline(inFile, count, '\n');
+		
+			if (nameofCan.compare(canName[pos]) == 0) {
+			
+				count = to_string(newCount);
+				cout << count << endl;
+				line = symbol + ",as" + nameofCan + "," + age + "," + suburb + "," + count;
+				cout << line << "found" << endl;
+			}
+			else {
+				line = symbol + ",as" + nameofCan + "," + age + "," + suburb + "," + count ;
+			}
+			ofstream inFile2;
+			inFile2.open(file, ios::app | ios::out);
+			if (inFile2.is_open()) {
+				inFile2 << line<< endl;
+				inFile2.close();
+			}
+			/*cout << j << ": " << line << endl;
+			j++;*/
+			//cout << nameofCan << " asd " << endl;
+			
+		}
+		inFile.close();
+		
+		
+	}
+	
+	
+	//inFile.close();
+	
+	
+}
+

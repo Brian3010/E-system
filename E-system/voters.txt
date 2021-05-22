@@ -11,4 +11,4 @@ Voter ID,Name,Age,Suburb,Status
 109,Risa Joyner,59,Southbank,Active
 110,Jacqueline Hamilton,43,South Melbourne,Active
 111,Wesley Brennan,57,Fairfield,Inactive
-112,onnor Richards,58,Burnley,Active
+112,Honnor Richards,58,Burnley,Active
