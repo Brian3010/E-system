@@ -7,5 +7,5 @@ Liberal,Gavin Thornton,55,Docklands,54
 The Greens,Jesse Ortiz,61,Carlton,62
 Liberal,Adrian Carter,64,Northcote,75
 Labor,Jordan Watkins,57,Preston,70
-Pirate,Christian Hodge,60,Reservoir,90
+Pirate,Christian Hodge,60,Reservoir,0
 Alp,Fulton Dodson,44,Fawkner,21

@@ -19,10 +19,10 @@ using namespace std;
 
 bool fexist(string file);
 
-//void storeDataintoVector()
-//void numberOfVote(string name, string file);
+void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2);
 
-void importCandidateToArray(string file, vector<string> vect1, vector<string> vect2, vector<int> vect3, vector<string> vect4, vector<int> vect5);
+void importCandidateToArray(string file, vector<string>& vect1, vector<string>& vect2, vector<int>& vect3, vector<string>& vect4, vector<int>& vect5);
+void importVoterToArray(string file, vector<int> &vect1, vector<string> &vect2, vector<int> &vect3, vector<string> &vect4, vector<string> &vect5);
 
 int main() {
 
@@ -32,11 +32,15 @@ int main() {
 	const string voterFile = "voters.txt";
 	const string candidateFile = "candidates.txt";
 
-	vector <string> sym_bol;
-	vector <string> can_Name;
-	vector <int> can_Age;
-	vector <string> sub_burb;
-	vector <int> can_Count;
+	/*vector declaration for storing data from candidate database*/
+	vector <string> sym_bol, can_Name, can_Suburb;
+	vector <int> can_Age, can_Count;
+
+	/*vector declaration for storing data from candidate database*/
+	vector <string> voterName,voterSuburb,voterStatus;
+	vector <int> voterID,voterAge;
+	
+
 
 	if (!fexist(voterFile) || !fexist(candidateFile)) {
 		cout << "Error!! openning the database" << endl;
@@ -60,18 +64,21 @@ int main() {
 			option = toupper(input);
 
 			/*convert text file to vector for easier data modification*/
-			importCandidateToArray(candidateFile,sym_bol, can_Name, can_Age, sub_burb, can_Count);
+			importCandidateToArray(candidateFile, sym_bol, can_Name, can_Age, can_Suburb, can_Count);
+			importVoterToArray(voterFile,voterID, voterName, voterAge, voterSuburb, voterStatus);
 
 			/*the switch-case then is used to idenfify choices from the user. depending on user's choice,
 			each case calls coresponding function to execute.
 			Invalid choice is prompted to try again*/
 			switch (option) {
 			case 'P':
+				
 				//Display number of votes
-				//cout << "Enter candidate's name: " << endl;
-				//cin >> candidateName;
-				//numberOfVote(candidateName, candidateFile);
-
+				cout << "Enter candidate's name (Please start the name with capital letter): " << endl;
+				getline(cin.ignore(), candidateName);
+				
+				numberOfVote(candidateName,can_Name,can_Count);
+				
 
 				break;
 			case 'A':
@@ -117,13 +124,14 @@ bool fexist(string file) {
 	return !isFile.fail();
 }
 
-void importCandidateToArray(string file,vector<string> vect1, vector<string> vect2, vector<int> vect3, vector<string> vect4, vector<int> vect5) {
+
+
+void importCandidateToArray(string file,vector<string> &vect1, vector<string> &vect2, vector<int> &vect3, vector<string> &vect4, vector<int> &vect5) {
 	string symbol, canName, age, suburb, count;
 
 	ifstream inFile(file);
 	string line;
 	getline(inFile, line);  //ignore the first line (heading)
-	//cout << line;
 
 	if (inFile.is_open()) {
 
@@ -131,7 +139,6 @@ void importCandidateToArray(string file,vector<string> vect1, vector<string> vec
 
 			/*dataset in candidate file: Eureka,Stephen Cummings,51,Kensington,50 
 			*							Nationals,Burke Lambert,61,Parkville,59
-			* 
 			*/
 			getline(inFile, symbol, ','); //get first data e.g. Eureka
 			vect1.push_back(symbol);	//push into vector 
@@ -158,53 +165,67 @@ void importCandidateToArray(string file,vector<string> vect1, vector<string> vec
 	else {
 		cout << "unable to open the database" << endl;
 	}
-
+	inFile.close();
 }
 
-/*void numberOfVote(string name, string file) {
-	
-	string symbol, canName, age, suburb, count;
-	vector <string> sym_bol;
-	vector <string> can_Name;
-	vector <int> can_Age;
-	vector <string> sub_burb;
-	vector <int> can_Count;
+void importVoterToArray(string file, vector<int>& vect1, vector<string>& vect2, vector<int>& vect3, vector<string>& vect4, vector<string>& vect5)
+{
+	string id, name, age, suburb,status;
 
-	
 	ifstream inFile(file);
 	string line;
-	getline (inFile,line);  //ignore the first line (heading)
-	//cout << line;
-	
+	getline(inFile, line); //ignore the first line (heading)
+
 	if (inFile.is_open()) {
-		
 		while (!inFile.eof()) {
-			getline(inFile,symbol , ',');
-			sym_bol.push_back(symbol);
+			getline(inFile, id, ',');
+			vect1.push_back(stoi(id));
 
-			getline(inFile,canName, ',');
-			can_Name.push_back(canName);
+			getline(inFile, name, ',');
+			vect2.push_back(name);
 
-			getline(inFile,age, ',');
-			can_Age.push_back(stoi(age));
+			getline(inFile, age, ',');
+			vect3.push_back(stoi(age));
 
-			getline(inFile,suburb, ',');
-			sub_burb.push_back(suburb);
+			getline(inFile, suburb, ',');
+			vect4.push_back(suburb);
 
-			getline(inFile,count, '\n');
-			can_Count.push_back(stoi(count));
-			
+			getline(inFile, status, '\n');
+			vect5.push_back(status);
+
 		}
-		
-		for (int i = 0; i < can_Age.size(); i++){
-			cout <<can_Age[i] << endl;
-		}
-		
+
+		/*for (int i = 0; i < vect1.size(); i++) {
+			cout << vect1[i] << endl;
+		}*/
 
 	}
 	else {
-		cout << "unable to open the database" << endl;
+		cout << "unable to open the Voter database" << endl;
 	}
 
+	inFile.close();
+}
 
-}*/
+void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2) {
+	int vote = -1;
+
+	for ( int i = 0; i < vect1.size(); i++) {
+		if (vect1[i].compare(name) == 0) {
+			vote = vect2[i];
+		}
+		if (vect1[i].compare(name) == 0 &&  vect2[i] ==0) {
+			vote = 0;
+		}
+	}
+
+	if (vote > 0){
+		cout << name << " has " << vote << " votes." << endl;
+	}
+	if (vote == 0) {
+		cout << "the list is empty" << endl;
+	}
+	if (vote == -1) {
+		cout << name << " is not listed in the database" << endl;
+	}
+}
