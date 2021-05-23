@@ -11,6 +11,7 @@
 #include <fstream> //library to work with file
 #include <string>
 #include <vector>
+
 using namespace std;
 
 
@@ -27,8 +28,9 @@ void importCandidateToArray(string file, vector<string>& vect1, vector<string>& 
 void importVoterToArray(string file, vector<int> &vect1, vector<string> &vect2, vector<int> &vect3, vector<string> &vect4, vector<string> &vect5);
 
 bool isName(vector<string>& vect1, string name);
-bool isID(vector<int>& vect1, int id);
+int isID(vector<int>& vect1, int id);
 bool isNumber(string id);
+
 
 void addVoteToCandidate(string file, int voteNum, string name,vector<string>& canName, vector<int> & canCount);
 int main() {
@@ -84,6 +86,7 @@ int main() {
 				//Display number of votes
 				cout << "Enter candidate's name (Please start the name with capital letter): " << endl;
 				getline(cin.ignore(), candidateName);
+
 				numberOfVote(candidateName,can_Name,can_Count);
 				break;
 			case 'A':
@@ -98,44 +101,36 @@ int main() {
 				if (!isNumber(id)) {
 					cout << "Please enter your id in number format" << endl;
 				}
-				else if (isNumber(id) && isID(voterID, stoi(id)) ) {
-					cout << "registered" << endl;
-					/*cout << "Enter candidate's name (Please start the name with capital letter): ";
-					getline(cin.ignore(), candidateName);*/
-
-					/*if (isName(can_Name, candidateName)) {
-						cout << "true";
-
-					}
-					else {
-						cout << "false";
-					}*/
-					bool flag = false;
-					do {
-						int voteNum;
+				else if (isNumber(id) && isID(voterID, stoi(id)) != -1 ) {
+					cout << "Welcome, " << voterName[isID(voterID, stoi(id))] << endl;
+						
+						string voteNum;
+						bool flag = true;
 						cout << "\nEnter candidate's name (Please start the name with capital letter): ";
 						getline(cin.ignore(), candidateName);
-						
+
 						if (isName(can_Name, candidateName)) {
-							cout << "true";
-							cout << "enter number of votes: ";
+
+							cout << "\nEnter number of votes: ";
 							cin >> voteNum;
-							addVoteToCandidate(candidateFile, voteNum,candidateName, can_Name, can_Count);
-							flag = true;
+							if(!isNumber(voteNum)){
+								cout << "Not a valid number, Please try again \n";
+							}
+							else {
+								
+								addVoteToCandidate(candidateFile, stoi(voteNum), candidateName, can_Name, can_Count);
+							}
+
 						}
 						else {
-							cout << "false";
-							flag = false;
-							
+							cout << candidateName << " does not exists, Please try again" << endl;
+	
 						}
 
-					} while (flag != false);
 				}
 				else {
-					cout << "not registered" << endl;
+					cout << "You are not registered" << endl;
 				}
-				
-				
 
 				break;
 			case 'S':
@@ -258,8 +253,8 @@ void importVoterToArray(string file, vector<int>& vect1, vector<string>& vect2, 
 
 void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2) {
 	int vote = -1;
-
 	for ( int i = 0; i < vect1.size(); i++) {
+
 		if (vect1[i].compare(name) == 0) {
 			vote = vect2[i];
 		}
@@ -290,14 +285,14 @@ bool isName(vector<string>& vect1, string name) {
 	
 }
 
-bool isID(vector<int>& vect1, int id)
+int isID(vector<int>& vect1, int id)
 {
 	for (int i = 0; i < vect1.size(); i++) {
 		if (vect1[i] == id) {
-			return true;
+			return i;
 		}	
 	}
-	return false;
+	return -1;
 }
 
 bool isNumber(string id)
@@ -310,65 +305,74 @@ bool isNumber(string id)
 	return false;
 }
 
-void addVoteToCandidate(string file, int voteNum, string name, vector<string>& canName, vector<int>& canCount)
-{
+/*this function update the count in candidate file, then open the candidate.txt for reading,
+open a new file temp.txt to copy data from candidates.txt with updated count. Finally, delete the candidates.txt
+and rename temp.txt to candidates.txt*/
+void addVoteToCandidate(string file, int voteNum, string name, vector<string>& canName, vector<int>& canCount) {
+
 	string line, symbol, nameofCan, age, suburb, count;
+	string newLine;
+	int pos = 0;
 
-	int newCount = 0;
-	int pos =0;
-	//bool flag = false;
 	for (int i = 0; i < canName.size(); i++) {
-		if (canName[i].compare(name) == 0) {
-			canCount[i] += voteNum;
-			newCount = canCount[i];
-			pos = i;
-			//flag = true;
+		if (canName[i].compare(name) == 0) { // search for name
+			canCount[i] += voteNum; // update count
+			pos = i; // get position in the array
 		}
-
 	}
 
-	cout << newCount;
-	fstream inFile;
-	//https://stackoverflow.com/questions/34507989/update-and-delete-data-from-file-in-c
-	inFile.open(file, ios::in );
-	int j = 0;
-	if (inFile.is_open()){
+	// open file for reading
+	ifstream inFile;
+	inFile.open(file);
+
+	// open new file for writing
+	ofstream tempFile;
+	tempFile.open("temp.txt");
+
+	bool firstline = true;
+
+	if (inFile.is_open() && tempFile.is_open()){
+
 		while (!inFile.eof()) {
-			getline(inFile, symbol, ',');
+			//extracting "," and "\n" and store data 
+			getline(inFile, symbol, ','); 
 			getline(inFile, nameofCan, ',');
 			getline(inFile, age, ',');
 			getline(inFile, suburb, ',');
 			getline(inFile, count, '\n');
-		
-			if (nameofCan.compare(canName[pos]) == 0) {
-			
-				count = to_string(newCount);
-				cout << count << endl;
-				line = symbol + ",as" + nameofCan + "," + age + "," + suburb + "," + count;
-				cout << line << "found" << endl;
+
+
+			if (!firstline) { //delete a new line from the end of the text file
+				tempFile << endl;
+			}
+			firstline = false;
+
+			//compare the current candidate's name with the updated cadidate's count, and update the line in file
+			if (nameofCan.compare(canName[pos]) == 0) {	
+
+				newLine = symbol + "," + nameofCan + "," + age + "," + suburb + "," + to_string(canCount[pos]);
+				tempFile << newLine; // save to the new file
 			}
 			else {
-				line = symbol + ",as" + nameofCan + "," + age + "," + suburb + "," + count ;
+				newLine = symbol + "," + nameofCan + "," + age + "," + suburb + "," + count;
+				tempFile << newLine;// save to the new file
 			}
-			ofstream inFile2;
-			inFile2.open(file, ios::app | ios::out);
-			if (inFile2.is_open()) {
-				inFile2 << line<< endl;
-				inFile2.close();
-			}
-			/*cout << j << ": " << line << endl;
-			j++;*/
-			//cout << nameofCan << " asd " << endl;
-			
+
+
 		}
+
 		inFile.close();
-		
-		
+		tempFile.close();
+		remove("candidates.txt"); // delete the old file 
+		rename("temp.txt","candidates.txt");// change the new file to candidates.txt
+
+		cout << "Number of votes added successfully" << endl 
+			<<canName[pos] << " now has " << canCount[pos] << " votes" << endl;
+
+
+	}else {
+		cout << "ERROR! Cannot access the database" << endl;
 	}
-	
-	
-	//inFile.close();
-	
-	
+
 }
 
