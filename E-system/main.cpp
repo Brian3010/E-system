@@ -31,6 +31,8 @@ bool isName(vector<string>& vect1, string name);
 int isID(vector<int>& vect1, int id);
 bool isNumber(string id);
 
+void displaySmallestNumber(vector<int>& vect1, vector<string>& vect2);
+void displaylargestNumber(vector<int>& vect1, vector<string>& vect2);
 
 void addVoteToCandidate(string file, int voteNum, string name,vector<string>& canName, vector<int> & canCount);
 int main() {
@@ -102,7 +104,7 @@ int main() {
 					cout << "Please enter your id in number format" << endl;
 				}
 				else if (isNumber(id) && isID(voterID, stoi(id)) != -1 ) {
-					cout << "Welcome, " << voterName[isID(voterID, stoi(id))] << endl;
+					cout << "Welcome back, " << voterName[isID(voterID, stoi(id))] << endl;
 						
 						string voteNum;
 						bool flag = true;
@@ -135,14 +137,12 @@ int main() {
 				break;
 			case 'S':
 				//Display smallest number of votes
-
-
+				displaySmallestNumber(can_Count,can_Name);
 
 				break;
 			case 'L':
 				//Display largest number of votes
-
-
+				displaylargestNumber(can_Count, can_Name);
 
 				break;
 			case 'Q':
@@ -305,6 +305,8 @@ bool isNumber(string id)
 	return false;
 }
 
+
+
 /*this function update the count in candidate file, then open the candidate.txt for reading,
 open a new file temp.txt to copy data from candidates.txt with updated count. Finally, delete the candidates.txt
 and rename temp.txt to candidates.txt*/
@@ -376,3 +378,42 @@ void addVoteToCandidate(string file, int voteNum, string name, vector<string>& c
 
 }
 
+void displaySmallestNumber(vector<int>& vect1, vector<string>& vect2)
+{
+	int min = vect1[0];
+	int pos = 0;
+	if (!vect1.empty()) {
+		for (int i = 0; i < vect1.size(); i++) {
+			if (vect1[i] < min) {
+				min = vect1[i];
+				pos = i;
+			}
+		}
+
+		cout << vect2[pos] << " has the smallest vote with " << vect1[pos] << " votes";
+	}
+	else {
+		cout << "Unable to determine the smallest number - list is empty" << endl;
+	}
+
+}
+
+void displaylargestNumber(vector<int>& vect1, vector<string>& vect2)
+{
+	int max = vect1[0];
+	int pos = 0;
+	if (!vect1.empty()) {
+		for (int i = 0; i < vect1.size(); i++) {
+			if (vect1[i] > max) {
+				max = vect1[i];
+				pos = i;
+			}
+		}
+
+		cout << vect2[pos] << " has the largest vote with " << vect1[pos] << " votes";
+	}
+	else {
+		cout << "Unable to determine the largest number - list is empty" << endl;
+	}
+
+}
