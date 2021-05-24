@@ -31,8 +31,8 @@ bool isName(vector<string>& vect1, string name);
 int isID(vector<int>& vect1, int id);
 bool isNumber(string id);
 
-void displaySmallestNumber(vector<int>& vect1, vector<string>& vect2);
-void displaylargestNumber(vector<int>& vect1, vector<string>& vect2);
+void displaySmallestNumber(string file);
+void displaylargestNumber(string file);
 
 void addVoteToCandidate(string file, int voteNum, string name,vector<string>& canName, vector<int> & canCount);
 int main() {
@@ -137,12 +137,12 @@ int main() {
 				break;
 			case 'S':
 				//Display smallest number of votes
-				displaySmallestNumber(can_Count,can_Name);
+				displaySmallestNumber(candidateFile);
 
 				break;
 			case 'L':
 				//Display largest number of votes
-				displaylargestNumber(can_Count, can_Name);
+				displaylargestNumber(candidateFile);
 
 				break;
 			case 'Q':
@@ -366,11 +366,14 @@ void addVoteToCandidate(string file, int voteNum, string name, vector<string>& c
 		inFile.close();
 		tempFile.close();
 		remove("candidates.txt"); // delete the old file 
-		rename("temp.txt","candidates.txt");// change the new file to candidates.txt
 
-		cout << "Number of votes added successfully" << endl 
-			<<canName[pos] << " now has " << canCount[pos] << " votes" << endl;
-
+		if (rename("temp.txt", "candidates.txt") != 0) {
+			cout << "ERROR renaming file" << endl;
+		}
+		else {
+			cout << "Number of votes added successfully" << endl
+				<< canName[pos] << " now has " << canCount[pos] << " votes" << endl;
+		}
 
 	}else {
 		cout << "ERROR! Cannot access the database" << endl;
@@ -378,42 +381,70 @@ void addVoteToCandidate(string file, int voteNum, string name, vector<string>& c
 
 }
 
-void displaySmallestNumber(vector<int>& vect1, vector<string>& vect2)
+void displaySmallestNumber(string file)
 {
-	int min = vect1[0];
-	int pos = 0;
-	if (!vect1.empty()) {
-		for (int i = 0; i < vect1.size(); i++) {
-			if (vect1[i] < min) {
-				min = vect1[i];
-				pos = i;
+	string nameCurrentLine;
+	string name;
+	int votes = 0xfffffff;
+	ifstream inFile(file);
+	string line;
+	int index = 0;
+	getline(inFile, line); //skip the first line
+	while (!inFile.eof()) {
+		for (int index = 0; index < 5; index++) {
+			if (index < 4) {
+				getline(inFile, line, ',');
+			}
+			else {
+				getline(inFile, line);
+			}
+			if (index == 1) {
+				nameCurrentLine = line;
+			}
+			if (index == 4) {
+				if (stoi(line) < votes) {
+					name = nameCurrentLine;
+					votes = stoi(line);
+				}
 			}
 		}
+	}
 
-		cout << vect2[pos] << " has the smallest vote with " << vect1[pos] << " votes";
-	}
-	else {
-		cout << "Unable to determine the smallest number - list is empty" << endl;
-	}
+	inFile.close();
+	cout << "The candidate with the smallest number of votes is " << name << " with " << votes << endl;
 
 }
 
-void displaylargestNumber(vector<int>& vect1, vector<string>& vect2)
+void displaylargestNumber(string file)
 {
-	int max = vect1[0];
-	int pos = 0;
-	if (!vect1.empty()) {
-		for (int i = 0; i < vect1.size(); i++) {
-			if (vect1[i] > max) {
-				max = vect1[i];
-				pos = i;
+
+	string nameCurrentLine;
+	string name;
+	int votes = 0;
+	ifstream inFile(file);
+	string line;
+	int index = 0;
+	getline(inFile, line); //skip the first line
+	while (!inFile.eof()) {
+		for (int index = 0; index < 5; index++) {
+			if (index < 4) {
+				getline(inFile, line, ',');
+			}
+			else {
+				getline(inFile, line);
+			}
+			if (index == 1) {
+				nameCurrentLine = line;
+			}
+			if (index == 4) {
+				if (stoi(line) > votes) {
+					name = nameCurrentLine;
+					votes = stoi(line);
+				}
 			}
 		}
-
-		cout << vect2[pos] << " has the largest vote with " << vect1[pos] << " votes";
-	}
-	else {
-		cout << "Unable to determine the largest number - list is empty" << endl;
 	}
 
+	inFile.close();
+	cout << "The candidate with the smallest number of votes is " << name << " with " << votes << endl;
 }

@@ -1,9 +1,9 @@
 Symbol,Name,Age,Suburb,Count
 Eureka,Stephen Cummings,51,Kensington,50
-Nationals,Burke Lambert,61,Parkville,69
+Nationals,Burke Lambert,61,Parkville,90
 Liberal,Odysseus Allison,62,South Wharf,48
-Labor,Julian Justice,48,South Yarra,89
-Liberal,Gavin Thornton,55,Docklands,54
+Labor,Julian Justice,48,South Yarra,108
+Liberal,Gavin Thornton,55,Docklands,56
 The Greens,Jesse Ortiz,61,Carlton,62
 Liberal,Adrian Carter,64,Northcote,75
 Labor,Jordan Watkins,57,Preston,70
