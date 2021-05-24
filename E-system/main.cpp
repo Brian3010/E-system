@@ -1,327 +1,320 @@
-/*Group members: Lam Duong - 102257701
-				 Rohan Ford - 102932516
-				 Gia Phuc Nguyen (Brian) - 101778599
-  File name:
+/*
+Group members:	102257701 - Lam Duong
+				102932516 - Rohan Ford
+				101778599 - Gia Phuc Nguyen (Brian)
 
-  Purpose of the program: the program is designed to help users in Melbourne to vote for their
-  prefered candidate and provide voters with information about the candidates.
+File name: main.cpp
+
+Purpose of the program: The program is designed to help users in Melbourne to vote for
+their prefered candidate and provide voters with information about the candidates.
 */
 
 #include <iostream>
-#include <fstream> //library to work with file
+#include <fstream>	// library to work with file
 #include <string>
 #include <vector>
 
 using namespace std;
 
-
-
-/*function declaration*/
-
-int main();
-
+/* Function Declaration */
 bool fexist(string file);
-
-void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2);
-
-void importCandidateToArray(string file, vector<string>& vect1, vector<string>& vect2, vector<int>& vect3, vector<string>& vect4, vector<int>& vect5);
-void importVoterToArray(string file, vector<int> &vect1, vector<string> &vect2, vector<int> &vect3, vector<string> &vect4, vector<string> &vect5);
-
-bool isName(vector<string>& vect1, string name);
-int isID(vector<int>& vect1, int id);
+void importCandidateToVector(string file, vector<string>& symbol, vector<string>& name, vector<int>& age, vector<string>& suburb, vector<int>& count);
+void importVoterToVector(string file, vector<int>& id, vector<string>& name, vector<int>& age, vector<string>& suburb, vector<string>& status);
+void numberOfVote(string nameInput, vector<string>& cName, vector<int>& cCount);
+int compareId(vector<int>& vId, int idInput);
+int compareName(vector<string>& cName, string nameInput);
 bool isNumber(string id);
+void addVoteToCandidate(string file, int voteInput, string nameInput, vector<string>& canName, vector<int>& canCount);
+void displaySmallestNumber(vector<string>& cName, vector<int>& cCount);
+void displayLargestNumber(vector<string>& cName, vector<int>& cCount);
 
-void displaySmallestNumber(string file);
-void displaylargestNumber(string file);
+/* MAIN */
+int main() 
+{
+	char option, input;		// variables to work with user's input
 
-void addVoteToCandidate(string file, int voteNum, string name,vector<string>& canName, vector<int> & canCount);
-int main() {
-
-	char option, input; // variable to work with user's input
-	string candidateName;
-	string id;
-
+	string canNameInput;
+	string voterIdInput;
 
 	const string voterFile = "voters.txt";
 	const string candidateFile = "candidates.txt";
 
-	/*vector declaration for storing data from candidate database*/
-	vector <string> sym_bol, can_Name, can_Suburb;
+	// vector declaration for storing data from candidate database
+	vector <string> can_Symbol, can_Name, can_Suburb;
 	vector <int> can_Age, can_Count;
 
-	/*vector declaration for storing data from candidate database*/
+	// vector declaration for storing data from candidate database
 	vector <string> voterName,voterSuburb,voterStatus;
 	vector <int> voterID,voterAge;
-	
 
-
+	// check if files exist
 	if (!fexist(voterFile) || !fexist(candidateFile)) {
-		cout << "Error!! openning the database" << endl;
-
-
+		cout << "ERROR openning file" << endl;
 	}
 	else {
-		/*using do-while loop to keep the program running until 'Q' option is selected*/
+		// loop until 'Q' option is selected
 		do {
-			/*display menu to the user*/
+			// convert text file to vector
+			importCandidateToVector(candidateFile, can_Symbol, can_Name, can_Age, can_Suburb, can_Count);
+			importVoterToVector(voterFile, voterID, voterName, voterAge, voterSuburb, voterStatus);
+
+			// display menu to the user
 			cout << "\n------------------------------------------------------------------------------------------" << endl;
-			cout << "P - Print numbers for a particular candidate (for example candidate 1 or candidate 2)" << endl;
+			cout << "P - Print numbers for a particular candidate" << endl;
 			cout << "A - Add number of votes to a candidate (with an existing voter ID)" << endl;
 			cout << "S - Display the smallest number of votes candidate" << endl;
 			cout << "L - Display the largest number of votes candidate" << endl;
 			cout << "Q - Quit" << endl;
 			cout << "Enter your choice: " << endl;
+			cin >> input;				// take input from user
+			option = toupper(input);	// convert to uppercase
 
-			/*take the input from the user and convert it to uppercase for easier verification*/
-			cin >> input;
-			option = toupper(input);
-
-			/*convert text file to vector for easier data modification*/
-			importCandidateToArray(candidateFile, sym_bol, can_Name, can_Age, can_Suburb, can_Count);
-			importVoterToArray(voterFile,voterID, voterName, voterAge, voterSuburb, voterStatus);
-
-			/*the switch-case then is used to idenfify choices from the user. depending on user's choice,
-			each case calls coresponding function to execute.
-			Invalid choice is prompted to try again*/
+			/* Corresponding Option */
 			switch (option) {
+			// Print number of votes
 			case 'P':
-				//Display number of votes
-				cout << "Enter candidate's name (Please start the name with capital letter): " << endl;
-				getline(cin.ignore(), candidateName);
+				cout << "Enter candidate's name - Please capitalize the first letter of each word: " << endl;
+				getline(cin.ignore(), canNameInput);	// get name from user
 
-				numberOfVote(candidateName,can_Name,can_Count);
+				// call function to get vote amount
+				numberOfVote(canNameInput, can_Name, can_Count);
+
 				break;
+
+			// Add number of votes to candidate 
 			case 'A':
-				//Add vote (integer) to the candidate 
-				cout << "Enter your ID: ";
-				cin >> id;
+				cout << "Enter your ID: " << endl;
+				cin >> voterIdInput;		// get id from user
 
-				/* the isNumber checks if the input is in number format or not, once it satisfies
-				* the required format, it checks if id is registered or not (isID (vector, id)),
-				* and process the data.
-				*/
-				if (!isNumber(id)) {
-					cout << "Please enter your id in number format" << endl;
+				// loop until input is in number format
+				while (!isNumber(voterIdInput)) {
+					cout << "Id has to be a number. Enter again: " << endl;
+					cin >> voterIdInput;	// get id from user
 				}
-				else if (isNumber(id) && isID(voterID, stoi(id)) != -1 ) {
-					cout << "Welcome back, " << voterName[isID(voterID, stoi(id))] << endl;
-						
-						string voteNum;
-						bool flag = true;
-						cout << "\nEnter candidate's name (Please start the name with capital letter): ";
-						getline(cin.ignore(), candidateName);
 
-						if (isName(can_Name, candidateName)) {
-
-							cout << "\nEnter number of votes: ";
-							cin >> voteNum;
-							if(!isNumber(voteNum)){
-								cout << "Not a valid number, Please try again \n";
-							}
-							else {
-								
-								addVoteToCandidate(candidateFile, stoi(voteNum), candidateName, can_Name, can_Count);
-							}
-
-						}
-						else {
-							cout << candidateName << " does not exists, Please try again" << endl;
-	
-						}
-
+				if (voterID.empty()) {
+					cout << "The list is empty" << endl;
 				}
 				else {
-					cout << "You are not registered" << endl;
+					// check if id exists in database
+					if (compareId(voterID, stoi(voterIdInput)) != -1) {
+						cout << "\nWelcome " << voterName[compareId(voterID, stoi(voterIdInput))] << endl;
+
+						string voteNum;
+						bool flag = true;
+
+						cout << "Enter candidate's name - Please capitalize the first letter of each word: " << endl;
+						getline(cin.ignore(), canNameInput);	// get name from user
+
+						if (can_Name.empty()) {
+							cout << "Unable to calculate the mean - no data" << endl;
+						}
+						else {
+							// check if name exists in database
+							if (compareName(can_Name, canNameInput) != -1) {
+								cout << "Enter number of votes: ";
+								cin >> voteNum;
+
+								// loop until input is a number
+								while (!isNumber(voteNum)) {
+									cout << "Invalid number. Enter again: " << endl;
+									cin >> voteNum;
+								}
+
+								addVoteToCandidate(candidateFile, stoi(voteNum), canNameInput, can_Name, can_Count);
+							}
+							else {
+								cout << canNameInput << " does not exist in the database" << endl;
+							}
+						}
+					}
+					else {
+						cout << "The ID does not exist in the database" << endl;
+					}
 				}
 
 				break;
+
+			// Smallest number of votes
 			case 'S':
-				//Display smallest number of votes
-				displaySmallestNumber(candidateFile);
-
+				displaySmallestNumber(can_Name, can_Count);
 				break;
+
+			// Largest number of votes
 			case 'L':
-				//Display largest number of votes
-				displaylargestNumber(candidateFile);
-
+				displayLargestNumber(can_Name, can_Count);
 				break;
+
+			// Quit
 			case 'Q':
 				cout << "Goodbye!!" << endl;
 				break;
+
 			default:
 				cout << "Unknown selection, please try again" << endl;
 			}
-
 		} while (option != 'Q');
-
 	}
+
 	return 0;
 }
 
 
-/*function definition*/
+/* Function Definition */
 
-//check if the database exists
-bool fexist(string file) {
+// Function to check if file exists
+bool fexist(string file) 
+{
 	ifstream isFile;
 	isFile.open(file);
 	return !isFile.fail();
 }
 
-
-
-void importCandidateToArray(string file,vector<string> &vect1, vector<string> &vect2, vector<int> &vect3, vector<string> &vect4, vector<int> &vect5) {
-	string symbol, canName, age, suburb, count;
-
-	ifstream inFile(file);
-	string line;
-	getline(inFile, line);  //ignore the first line (heading)
-
-	if (inFile.is_open()) {
-
-		while (!inFile.eof()) {  
-
-			/*dataset in candidate file: Eureka,Stephen Cummings,51,Kensington,50 
-			*							Nationals,Burke Lambert,61,Parkville,59
-			*/
-			getline(inFile, symbol, ','); //get first data e.g. Eureka
-			vect1.push_back(symbol);	//push into vector 
-
-			getline(inFile, canName, ','); // move to next data e.g. Stephen Cummings
-			vect2.push_back(canName);	//push into vector
-
-			getline(inFile, age, ','); //move to next e.g. 51
-			vect3.push_back(stoi(age));//push into vector
-
-			getline(inFile, suburb, ','); //move to next e.g.Kensington
-			vect4.push_back(suburb);//push into vector
-
-			getline(inFile, count, '\n');  //move to next e.g. 50
-			vect5.push_back(stoi(count));//push into vector
-
-		}
-
-		/*for (int i = 0; i < vect1.size(); i++) {
-			cout << vect1[i] << endl;
-		}*/
-		inFile.close();
-	}
-	else {
-		cout << "unable to open the database" << endl;
-	}
-	
-}
-
-void importVoterToArray(string file, vector<int>& vect1, vector<string>& vect2, vector<int>& vect3, vector<string>& vect4, vector<string>& vect5)
+// Function to convert candidate data in file to vector
+void importCandidateToVector(string file, vector<string>& symbol, vector<string>& name, vector<int>& age, vector<string>& suburb, vector<int>& count)
 {
-	string id, name, age, suburb,status;
+	string lSymbol, lName, lAge, lSuburb, lCount;
+	string line;
 
 	ifstream inFile(file);
-	string line;
-	getline(inFile, line); //ignore the first line (heading)
-
 	if (inFile.is_open()) {
+
+		/*	Candidate file format:
+			Symbol,Name,Age,Suburb,Count
+			Eureka,Stephen Cummings,51,Kensington,50
+		*/
+
+		getline(inFile, line);  // ignore the first line (heading)
+
+		// loop until end of file
 		while (!inFile.eof()) {
-			getline(inFile, id, ',');
-			vect1.push_back(stoi(id));
+			getline(inFile, lSymbol, ',');	// get first data: Symbol (e.g. Eureka) 
+			symbol.push_back(lSymbol);		// push into vector 
 
-			getline(inFile, name, ',');
-			vect2.push_back(name);
+			getline(inFile, lName, ',');	// get next data: Name (e.g. Stephen Cummings)
+			name.push_back(lName);			// push into vector
 
-			getline(inFile, age, ',');
-			vect3.push_back(stoi(age));
+			getline(inFile, lAge, ',');		// get next data: Age (e.g. 51)
+			age.push_back(stoi(lAge));		// push into vector
 
-			getline(inFile, suburb, ',');
-			vect4.push_back(suburb);
+			getline(inFile, lSuburb, ',');	// get next data: Suburb (e.g.Kensington)
+			suburb.push_back(lSuburb);		// push into vector
 
-			getline(inFile, status, '\n');
-			vect5.push_back(status);
-
+			getline(inFile, lCount, '\n');  // get next data: Count (e.g. 50)
+			count.push_back(stoi(lCount));	// push into vector
 		}
 
-		/*for (int i = 0; i < vect1.size(); i++) {
-			cout << vect1[i] << endl;
-		}*/
 		inFile.close();
 	}
 	else {
-		cout << "unable to open the Voter database" << endl;
-	}
-
-	
-}
-
-void numberOfVote(string name, vector<string>& vect1, vector<int>& vect2) {
-	int vote = -1;
-	for ( int i = 0; i < vect1.size(); i++) {
-
-		if (vect1[i].compare(name) == 0) {
-			vote = vect2[i];
-		}
-		if (vect1[i].compare(name) == 0 &&  vect2[i] ==0) {
-			vote = 0;
-		}
-	}
-
-	if (vote > 0){
-		cout << name << " has " << vote << " votes." << endl;
-	}
-	if (vote == 0) {
-		cout << "the list is empty" << endl;
-	}
-	if (vote == -1) {
-		cout << name << " is not listed in the database" << endl;
+		cout << "Unable to open Candidate file" << endl;
 	}
 }
 
-bool isName(vector<string>& vect1, string name) {
-	for (int i = 0; i < vect1.size(); i++) {
-		if (vect1[i].compare(name) == 0) {
-			return true;
-		}
-	
-	}
-	return false;
-	
-}
-
-int isID(vector<int>& vect1, int id)
+// Function to convert voter data in file to vector
+void importVoterToVector(string file, vector<int>& id, vector<string>& name, vector<int>& age, vector<string>& suburb, vector<string>& status)
 {
-	for (int i = 0; i < vect1.size(); i++) {
-		if (vect1[i] == id) {
-			return i;
-		}	
+	string lId, lName, lAge, lSuburb, lStatus;
+	string line;
+
+	ifstream inFile(file);
+	if (inFile.is_open()) {
+
+		/*	Voter file format:
+			Voter ID,Name,Age,Suburb,Status
+			100,Lunea Yang,31,Fleminton,Active
+		*/
+
+		getline(inFile, line); // ignore the first line (heading)
+
+		// loop until end of file
+		while (!inFile.eof()) {
+			getline(inFile, lId, ',');		// get first data: Voter ID (e.g. 100) 
+			id.push_back(stoi(lId));		// push into vector
+
+			getline(inFile, lName, ',');	// get next data: Name (e.g. Lunea Yang)
+			name.push_back(lName);			// push into vector
+
+			getline(inFile, lAge, ',');		// get next data: Age (e.g. 31)
+			age.push_back(stoi(lAge));		// push into vector
+
+			getline(inFile, lSuburb, ',');	// get next data: Suburb (e.g. Fleminton)
+			suburb.push_back(lSuburb);		// push into vector
+
+			getline(inFile, lStatus, '\n');	// get next data: Status (e.g. Active)
+			status.push_back(lStatus);		// push into vector
+		}
+
+		inFile.close();
+	}
+	else {
+		cout << "Unable to open Voter file" << endl;
+	}
+}
+
+// Function to get vote amount of a candidate
+void numberOfVote(string nameInput, vector<string>& cName, vector<int>& cCount) 
+{
+	// check if list is empty
+	if (cName.empty()) {
+		cout << "The list is empty" << endl;
+	}
+	else {
+		// call function to compare name
+		int index = compareName(cName, nameInput);
+
+		// print to the screen
+		if (index == -1) {
+			cout << nameInput << " does not exist in the database" << endl;
+		}
+		else {
+			cout << nameInput << " has " << cCount[index] << " vote(s)." << endl;
+		}
+	}
+}
+
+// Function to compare each voter id with id input
+int compareId(vector<int>& vId, int idInput)
+{
+	for (int i = 0; i < vId.size(); i++) {
+		if (vId[i] == idInput) {	// if equal
+			return i;				// return index
+		}
 	}
 	return -1;
 }
 
+// Function to compare each candidate name with name input
+int compareName(vector<string>& cName, string nameInput) 
+{
+	for (int i = 0; i < cName.size(); i++) {
+		if (cName[i].compare(nameInput) == 0) {	// if equal
+			return i;							// return index
+		}
+	}
+	return -1;
+}
+
+// Function to check if input is a number
 bool isNumber(string id)
 {
 	for (int i = 0; i < id.length(); i++) {
-		if (isdigit(id[i])) {
-			return true;
+		if (!isdigit(id[i])) {
+			return false;
 		}
 	}
-	return false;
+	return true;
 }
 
+// Function to add vote to the candidate
+void addVoteToCandidate(string file, int voteInput, string nameInput, vector<string>& canName, vector<int>& canCount) 
+{
+	string line, lSymbol, lName, lAge, lSuburb, lCount;
 
-
-/*this function update the count in candidate file, then open the candidate.txt for reading,
-open a new file temp.txt to copy data from candidates.txt with updated count. Finally, delete the candidates.txt
-and rename temp.txt to candidates.txt*/
-void addVoteToCandidate(string file, int voteNum, string name, vector<string>& canName, vector<int>& canCount) {
-
-	string line, symbol, nameofCan, age, suburb, count;
 	string newLine;
-	int pos = 0;
 
-	for (int i = 0; i < canName.size(); i++) {
-		if (canName[i].compare(name) == 0) { // search for name
-			canCount[i] += voteNum; // update count
-			pos = i; // get position in the array
-		}
-	}
+	int index = compareName(canName, nameInput);	// get index where candidate's name equals name input
+	canCount[index] += voteInput;					// update count
 
 	// open file for reading
 	ifstream inFile;
@@ -333,118 +326,92 @@ void addVoteToCandidate(string file, int voteNum, string name, vector<string>& c
 
 	bool firstline = true;
 
-	if (inFile.is_open() && tempFile.is_open()){
-
+	if (inFile.is_open() && tempFile.is_open()) {
+		// loop until end of file
 		while (!inFile.eof()) {
 			//extracting "," and "\n" and store data 
-			getline(inFile, symbol, ','); 
-			getline(inFile, nameofCan, ',');
-			getline(inFile, age, ',');
-			getline(inFile, suburb, ',');
-			getline(inFile, count, '\n');
+			getline(inFile, lSymbol, ','); 
+			getline(inFile, lName, ',');
+			getline(inFile, lAge, ',');
+			getline(inFile, lSuburb, ',');
+			getline(inFile, lCount, '\n');
 
-
-			if (!firstline) { //delete a new line from the end of the text file
+			if (!firstline) {		// delete a new line from the end of the text file
 				tempFile << endl;
 			}
+
 			firstline = false;
 
-			//compare the current candidate's name with the updated cadidate's count, and update the line in file
-			if (nameofCan.compare(canName[pos]) == 0) {	
-
-				newLine = symbol + "," + nameofCan + "," + age + "," + suburb + "," + to_string(canCount[pos]);
-				tempFile << newLine; // save to the new file
+			// compare the current candidate's name with the updated cadidate's count, and update the line in file
+			if (lName.compare(canName[index]) == 0) {	
+				newLine = lSymbol + "," + lName + "," + lAge + "," + lSuburb + "," + to_string(canCount[index]);
 			}
 			else {
-				newLine = symbol + "," + nameofCan + "," + age + "," + suburb + "," + count;
-				tempFile << newLine;// save to the new file
+				newLine = lSymbol + "," + lName + "," + lAge + "," + lSuburb + "," + lCount;
 			}
 
-
+			tempFile << newLine;	// save to the new file
 		}
 
 		inFile.close();
 		tempFile.close();
-		remove("candidates.txt"); // delete the old file 
 
+		remove("candidates.txt");	// delete the old file 
+
+		// rename file
 		if (rename("temp.txt", "candidates.txt") != 0) {
 			cout << "ERROR renaming file" << endl;
 		}
 		else {
 			cout << "Number of votes added successfully" << endl
-				<< canName[pos] << " now has " << canCount[pos] << " votes" << endl;
+				<< canName[index] << " now has " << canCount[index] << " vote(s)" << endl;
 		}
 
-	}else {
-		cout << "ERROR! Cannot access the database" << endl;
+	} else {
+		cout << "ERROR! Cannot access the file" << endl;
 	}
-
 }
 
-void displaySmallestNumber(string file)
+// Function to display smallest number of votes
+void displaySmallestNumber(vector<string>& cName, vector<int>& cCount)
 {
-	string nameCurrentLine;
-	string name;
-	int votes = 0xfffffff;
-	ifstream inFile(file);
-	string line;
-	int index = 0;
-	getline(inFile, line); //skip the first line
-	while (!inFile.eof()) {
-		for (int index = 0; index < 5; index++) {
-			if (index < 4) {
-				getline(inFile, line, ',');
-			}
-			else {
-				getline(inFile, line);
-			}
-			if (index == 1) {
-				nameCurrentLine = line;
-			}
-			if (index == 4) {
-				if (stoi(line) < votes) {
-					name = nameCurrentLine;
-					votes = stoi(line);
-				}
+	if (cName.empty()) {
+		cout << "Unable to determine the smallest number - list is empty" << endl;
+	}
+	else {
+		string name;
+		int min = 0xfffffff;
+
+		for (int i = 0; i < cCount.size(); i++) {
+			if (cCount[i] < min) {	// if vote count less then min
+				name = cName[i];	// assign new name
+				min = cCount[i];	// assign new min
 			}
 		}
+
+		// display
+		cout << "The candidate with the smallest number of votes is " << name << " with " << min << " vote(s)" << endl;
 	}
-
-	inFile.close();
-	cout << "The candidate with the smallest number of votes is " << name << " with " << votes << endl;
-
 }
 
-void displaylargestNumber(string file)
+// Function to display largest number of votes
+void displayLargestNumber(vector<string>& cName, vector<int>& cCount)
 {
+	if (cName.empty()) {
+		cout << "Unable to determine the largest number - list is empty" << endl;
+	}
+	else {
+		string name;
+		int max = 0;
 
-	string nameCurrentLine;
-	string name;
-	int votes = 0;
-	ifstream inFile(file);
-	string line;
-	int index = 0;
-	getline(inFile, line); //skip the first line
-	while (!inFile.eof()) {
-		for (int index = 0; index < 5; index++) {
-			if (index < 4) {
-				getline(inFile, line, ',');
-			}
-			else {
-				getline(inFile, line);
-			}
-			if (index == 1) {
-				nameCurrentLine = line;
-			}
-			if (index == 4) {
-				if (stoi(line) > votes) {
-					name = nameCurrentLine;
-					votes = stoi(line);
-				}
+		for (int i = 0; i < cCount.size(); i++) {
+			if (cCount[i] > max) {	// if vote count more then max
+				name = cName[i];	// assign new name
+				max = cCount[i];	// assign new max
 			}
 		}
-	}
 
-	inFile.close();
-	cout << "The candidate with the smallest number of votes is " << name << " with " << votes << endl;
+		// display
+		cout << "The candidate with the smallest number of votes is " << name << " with " << max << " vote(s)" << endl;
+	}
 }
