@@ -412,6 +412,6 @@ void displayLargestNumber(vector<string>& cName, vector<int>& cCount)
 		}
 
 		// display
-		cout << "The candidate with the smallest number of votes is " << name << " with " << max << " vote(s)" << endl;
+		cout << "The candidate with the largest number of votes is " << name << " with " << max << " vote(s)" << endl;
 	}
 }
