@@ -4,7 +4,7 @@ Voter ID,Name,Age,Suburb,Status
 102,Gil Holland,58,Fitzroy,Inactive
 103,Grady Black,46,Richmond,Active
 104,Robert Santana,34,Princes Hill,Active
-105,Isadora Britt,46,Burnley,ctive
+105,Isadora Britt,46,Burnley,Active
 106,Kiona Bass,43,Footscray,Inactive
 107,Jordan Atkins,56,Port Melbourne,Active
 108,Tatiana Hart,40,St Kilda,Active
